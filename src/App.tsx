@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import QrCodeReaderComponent from './QrCodeReaderComponent';
+
+import QrCodeReaderComponent from './QrCodeReaderComponent'; 
 import BarcodeScannerComponent from './BarcodeScannerComponent';
 
 interface QRCode {
@@ -46,7 +47,7 @@ function App() {
 
   // Função para gerenciar erros do scanner de código de barras
   const handleBarcodeError = (error: Error) => {
-    console.error('Erro ao ler código de barras: ', error.message);
+    console.error('Erro ao ler código de barras: ', error);
   };
 
   // Define as configurações da câmera
