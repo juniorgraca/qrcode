@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react';
-import QrCodeReader, { QRCode } from 'react-qrcode-reader';
+import QrCodeReaderComponent from './QrCodeReaderComponent'; 
+import BarcodeScannerComponent from './BarcodeScannerComponent';
+
+interface QRCode {
+  data: string;
+}
 
 function App() {
   const [val, setVal] = useState<string>('');
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>(''); 
+  const [isScanning, setIsScanning] = useState<boolean>(false);  // Para gerenciar o estado da tela verde
 
   // Detectar câmeras disponíveis
   useEffect(() => {
@@ -25,10 +31,22 @@ function App() {
   }, []);
 
   // Função para lidar com a leitura do QR Code
-  const handleRead = (code: QRCode) => {
+  const handleQrRead = (code: QRCode) => {
     if (code) {
       setVal(code.data);
+      setIsScanning(false); // Desativa a tela verde após a leitura do QR Code
     }
+  };
+
+  // Função para lidar com a leitura do Código de Barras
+  const handleBarcodeRead = (data: string) => {
+    setVal(data);
+    setIsScanning(false); // Desativa a tela verde após a leitura do Código de Barras
+  };
+
+  // Função para gerenciar erros do scanner de código de barras
+  const handleBarcodeError = (error: Error) => {
+    console.error('Erro ao ler código de barras: ', error);
   };
 
   // Define as configurações da câmera
@@ -39,7 +57,7 @@ function App() {
 
   return (
     <div>
-      <h1>Leitor de QR Code</h1>
+      <h1>Leitor de QR Code e Código de Barras</h1>
       
       {/* Exibe a lista de câmeras disponíveis */}
       {cameras.length > 0 && (
@@ -58,13 +76,29 @@ function App() {
         </div>
       )}
 
-      {/* Exibe o leitor de QR Code */}
-      <QrCodeReader
-        delay={100}
-        width={500}
-        height={500}
-        onRead={handleRead}
-        videoConstraints={videoConstraints}  // Passa as configurações de vídeo
+      {/* Exibe a tela verde durante a leitura */}
+      {isScanning && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 255, 0, 0.5)',
+          zIndex: 1000,
+        }}></div>
+      )}
+
+      {/* Componente para ler QR Code */}
+      <QrCodeReaderComponent
+        videoConstraints={videoConstraints}
+        onRead={handleQrRead}
+      />
+
+      {/* Componente para ler Código de Barras */}
+      <BarcodeScannerComponent
+        onScan={handleBarcodeRead}
+        onError={handleBarcodeError}
       />
       
       <p>Valor lido: {val}</p>
