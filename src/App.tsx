@@ -4,15 +4,20 @@ import QrCodeReader, { QRCode } from 'react-qrcode-reader';
 function App() {
   const [val, setVal] = useState<string>('');
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
-  const [selectedCamera, setSelectedCamera] = useState<string>('');
+  const [selectedCamera, setSelectedCamera] = useState<string>(''); 
 
   // Detectar câmeras disponíveis
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices().then((devices) => {
       const videoDevices = devices.filter((device) => device.kind === 'videoinput');
       setCameras(videoDevices);
-      if (videoDevices.length > 0) {
-        setSelectedCamera(videoDevices[0].deviceId); // Seleciona a primeira câmera por padrão
+      
+      // Seleciona a câmera traseira, caso esteja disponível, caso contrário, usa a primeira câmera
+      const rearCamera = videoDevices.find((device) => device.label.toLowerCase().includes('back'));
+      if (rearCamera) {
+        setSelectedCamera(rearCamera.deviceId);  // Câmera traseira
+      } else if (videoDevices.length > 0) {
+        setSelectedCamera(videoDevices[0].deviceId); // Seleciona a primeira câmera se não houver traseira
       }
     }).catch((err) => {
       console.error("Erro ao acessar dispositivos de mídia: ", err);
@@ -54,6 +59,7 @@ function App() {
         height={500}
         onRead={handleRead}
         videoId={selectedCamera}  // Passa o deviceId correto para o videoId
+        facingMode={selectedCamera ? 'environment' : 'user'}  // Força a câmera traseira (se possível)
       />
       
       <p>Valor lido: {val}</p>
