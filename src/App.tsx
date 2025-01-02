@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import QrCodeReader, { QRCode } from 'react-qrcode-reader';
 
 function App() {
@@ -58,7 +58,6 @@ function App() {
         width={500}
         height={500}
         onRead={handleRead}
-        videoId={selectedCamera}  // Passa o deviceId correto para o videoId
         facingMode={selectedCamera ? 'environment' : 'user'}  // Força a câmera traseira (se possível)
       />
       
