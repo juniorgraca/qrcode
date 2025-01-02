@@ -31,6 +31,12 @@ function App() {
     }
   };
 
+  // Define as configurações da câmera
+  const videoConstraints = {
+    facingMode: selectedCamera ? 'environment' : 'user',
+    deviceId: selectedCamera ? { exact: selectedCamera } : undefined
+  };
+
   return (
     <div>
       <h1>Leitor de QR Code</h1>
@@ -58,7 +64,7 @@ function App() {
         width={500}
         height={500}
         onRead={handleRead}
-        facingMode={selectedCamera ? 'environment' : 'user'}  // Força a câmera traseira (se possível)
+        videoConstraints={videoConstraints}  // Passa as configurações de vídeo
       />
       
       <p>Valor lido: {val}</p>
